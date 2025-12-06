@@ -2,20 +2,13 @@ import java.util.*;
 
 class crc {
     void div(int a[], int k) {
-        // Generator Polynomial: 10001000000100001
-        int gp[] = {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1}; // Note: Manual usually has 17 bits
-        // Check your manual carefully, the array in the PDF snippet had {1,0,0,0,1...}
-        // but sometimes manuals have specific polys. I am using the one from the code block:
-        // int gp[]={1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1}; -> This is 16 bits, usually GP is 17 for CRC-16.
-        // However, based on the manual text provided:
-        // gp[]={1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1}; 
+        
+        int gp[] = {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1}; 
         
         int count = 0;
         for (int i = 0; i < k; i++) {
             if (a[i] == gp[0]) {
                 for (int j = i; j < 17 + i; j++) {
-                    // Safety check for array bounds might be needed in real code, 
-                    // but sticking to manual logic:
                     if(j < a.length)
                         a[j] = a[j] ^ gp[count++];
                 }
@@ -40,21 +33,19 @@ class crc {
             a[i] = sc.nextInt();
         }
         
-        // Append Zeros
         for (int i = 0; i < 16; i++) {
             a[len++] = 0;
         }
         
         k = len - 16;
         
-        // Copy to backup array b
         for (int i = 0; i < len; i++) {
             b[i] = a[i];
         }
         
         ob.div(a, k);
         
-        // XOR original message with remainder to get transmitted data
+        
         for (int i = 0; i < len; i++) {
             a[i] = a[i] ^ b[i];
         }
