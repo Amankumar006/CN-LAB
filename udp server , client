@@ -1,0 +1,65 @@
+import java.io.*;
+import java.net.*;
+
+public class UDPS {
+    public static void main(String[] args) {
+        DatagramSocket skt = null;
+        try {
+            skt = new DatagramSocket(6788);
+            byte[] buffer = new byte[1000];
+            System.out.println("Server started. Waiting for client...");
+            
+            while (true) {
+                DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+                skt.receive(request);
+                
+                String[] message = (new String(request.getData())).split(" ");
+                // Note: manual logic assumes message has space, e.g. "text message"
+                
+                byte[] sendMsg = (message[1] + " server processed").getBytes();
+                
+                DatagramPacket reply = new DatagramPacket(sendMsg, sendMsg.length, request.getAddress(), request.getPort());
+                skt.send(reply);
+                System.out.println("Reply sent to client.");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
+
+
+
+
+
+//client
+
+
+import java.io.*;
+import java.net.*;
+
+public class UDPC {
+    public static void main(String[] args) {
+        DatagramSocket skt;
+        try {
+            skt = new DatagramSocket();
+            String msg = "text message "; // Ensure space for server split logic
+            byte[] b = msg.getBytes();
+            
+            InetAddress host = InetAddress.getByName("127.0.0.1");
+            int serverSocket = 6788;
+            
+            DatagramPacket request = new DatagramPacket(b, b.length, host, serverSocket);
+            skt.send(request);
+            
+            byte[] buffer = new byte[1000];
+            DatagramPacket reply = new DatagramPacket(buffer, buffer.length);
+            skt.receive(reply);
+            
+            System.out.println("Client received: " + new String(reply.getData()));
+            skt.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+}
